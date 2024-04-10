@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/model/photoModel.dart';
 
-
 class DetailScreen extends StatelessWidget {
   final Photo photo;
 
@@ -15,7 +14,8 @@ class DetailScreen extends StatelessWidget {
       ),
       body: Center(
         child: Hero(
-          tag: photo.id,
+          tag:
+              'image_${photo.id}', 
           child: Image.network(photo.imageUrl),
         ),
       ),

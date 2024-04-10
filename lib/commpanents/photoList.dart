@@ -14,7 +14,10 @@ class PhotoListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Image.network(photo.thumbnailUrl),
+      leading: Hero(
+        tag: 'thumbnail_${photo.id}', 
+        child: Image.network(photo.thumbnailUrl),
+      ),
       title: Text(photo.title),
       onTap: onTap,
     );

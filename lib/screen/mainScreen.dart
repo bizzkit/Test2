@@ -27,6 +27,7 @@ class _MainScreenState extends State<MainScreen> {
   Future<void> _fetchPhotos() async {
     setState(() {
       _isLoading = true;
+      _errorMessage = '';
     });
 
     try {
@@ -34,7 +35,6 @@ class _MainScreenState extends State<MainScreen> {
       setState(() {
         _photos = photos;
         _isLoading = false;
-        _errorMessage = '';
       });
     } catch (e) {
       setState(() {
@@ -44,7 +44,7 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  void _onRefresh() async {
+  Future<void> _onRefresh() async {
     await _fetchPhotos();
     _refreshController.refreshCompleted();
   }
@@ -55,42 +55,36 @@ class _MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         title: Text('Market App'),
       ),
-      body: SmartRefresher(
-        controller: _refreshController,
-        enablePullDown: true,
-        onRefresh: _onRefresh,
-        child: _buildBody(),
-      ),
-    );
-  }
-
-  Widget _buildBody() {
-    if (_isLoading) {
-      return Center(
-        child: CircularProgressIndicator(),
-      );
-    } else if (_errorMessage.isNotEmpty) {
-      return Center(
-        child: Text(_errorMessage),
-      );
-    } else {
-      return ListView.builder(
-        itemCount: _photos.length,
-        itemBuilder: (context, index) {
-          final photo = _photos[index];
-          return PhotoListItem(
-            photo: photo,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DetailScreen(photo: photo),
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : _errorMessage.isNotEmpty
+              ? Center(
+                  child: Text(_errorMessage),
+                )
+              : SmartRefresher(
+                  controller: _refreshController,
+                  enablePullDown: true,
+                  onRefresh: _onRefresh,
+                  child: ListView.builder(
+                    itemCount: _photos.length,
+                    itemBuilder: (context, index) {
+                      final photo = _photos[index];
+                      return PhotoListItem(
+                        photo: photo,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetailScreen(photo: photo),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
-              );
-            },
-          );
-        },
-      );
-    }
+    );
   }
 }
